@@ -1,0 +1,408 @@
+#include <iostream>
+using namespace std;
+#include <time.h>
+#include <conio.h>
+#include <stdlib.h>
+#include <Windows.h>
+#include "console.h"
+#define consoleWidth	80
+#define consoleHeight	30
+
+struct vemoto {
+	unsigned char kitu;
+	int mau;
+};
+
+vemoto buffer[consoleHeight][consoleWidth];
+
+void GanO(int dong, int cot, int kitu, int mau = 7) { // màu mặc định băng 7
+	buffer[dong][cot].kitu = kitu; // buff màu và kí tự cho vật phẩm, có thể buff like tym nếu học sâu hơn
+	buffer[dong][cot].mau = mau; 
+}
+
+
+enum TrangThai { UP, DOWN, LEFT, RIGHT };
+
+struct ToaDo
+{
+	int y, x;	// y là tung độ, x là hoành độ
+};
+
+struct HoaQua
+{
+	ToaDo td;
+};
+
+struct Snake
+{
+	ToaDo dot[100];
+	int n;
+	TrangThai tt;
+	int diem;
+};
+
+void KhoiTao(Snake& snake, HoaQua& hq)
+{
+	snake.diem = 0;
+	snake.n = 1;
+	snake.dot[0].x = 10;
+	snake.dot[0].y = 10;
+	snake.tt = RIGHT;
+	hq.td.x = 10;
+	hq.td.y = 6;
+}
+
+void HienThi(Snake snake, HoaQua hq)
+{
+		// khung giới hạn của trò chơi
+	for (int i = 1; i <= consoleHeight; i++)
+	{
+		//khung trái
+		GanO(i, 0, '+',3);
+		//khung phải
+		GanO(i, consoleWidth-79, '+',3);
+	}
+	for (int i = 1; i <= consoleWidth; i++)
+	{
+		//khung trên
+		GanO(0, i, '+',4);
+		//khung dưới
+		GanO( consoleHeight-1,i, '+',4);
+	}
+
+	
+	// in ra hoa quả
+	
+	int x = hq.td.x;
+	int y = hq.td.y;
+	GanO(y, x, '@',rand() %15);
+
+	// in ra con rắn nè
+
+	GanO(snake.dot[0].y, snake.dot[0].x, 'O',3);
+
+	// in ra thân con rắn
+	for (int i = 1; i < snake.n; i++)
+	{
+		/*TextColor(14);
+		gotoXY(snake.dot[i].x, snake.dot[i].y);
+		putchar('o');*/
+		GanO(snake.dot[i].y, snake.dot[i].x, 'o', 14);
+	}
+
+
+	// in toàn bộ buffer ra màn hình
+	gotoXY(0, 0);
+
+	for (int i = 0; i < consoleHeight; i++)
+	{
+		for (int j = 1; j <= consoleWidth; j++)
+		{
+			TextColor(buffer[i][j].mau);
+			putchar(buffer[i][j].kitu);
+
+			buffer[i][j].kitu = ' ';
+		}
+
+		if (i <= consoleHeight)
+			putchar('\n');
+		else if (i < consoleWidth)
+			putchar('\n');
+	}
+	//gotoXY(93, 3);
+	//cout << "DESIGN GAME BY VAN HOANG <3 >.< ";
+
+	gotoXY(95, 17);
+	cout << "DIEM CUA BAN LA: " << snake.diem;
+	gotoXY(98, 19);
+	cout << "HUONG DAN CO BAN:";
+	gotoXY(85, 20);
+	cout << "NHAP CHUOT DE PAUSE - NHAN TIEP ENTER DE TIEP TUC!";
+	gotoXY(90, 21);
+	cout << "NHAN CAC PHIM W-A-S-D DE DIEU KHIEN CON RAN.";
+}
+
+void DieuKhien_DiChuyen(Snake &snake)
+{
+	// truyền trạng thái cho đốt cũ
+	for (int i = snake.n - 1; i > 0; i--)
+		snake.dot[i] = snake.dot[i - 1];
+
+	if (_kbhit()) // nếu phát hiện có phím nhấn vào
+	{
+		int key = _getch();
+		// chỉ điều khiển cái đầu
+		if (key == 'a' || key == 'A')
+			snake.tt = LEFT;
+		else if (key == 'd' || key == 'D')
+			snake.tt = RIGHT;
+		else if (key == 'w' || key == 'W')
+			snake.tt = UP;
+		else if (key == 's' || key == 'S')
+			snake.tt = DOWN;
+	}
+	if (snake.tt == UP)
+		snake.dot[0].y--;
+	else if (snake.tt == DOWN)
+		snake.dot[0].y++;
+	else if (snake.tt == LEFT)
+		snake.dot[0].x--;
+	else if (snake.tt == RIGHT)
+		snake.dot[0].x++;
+}
+// trả về 0 nếu không có gì
+// trả về -1 nếu thua game
+int XuLy(Snake& snake, HoaQua& hq, int& ThoiGianSleep)
+{
+	if (snake.dot[0].x <= 0 || snake.dot[0].x >= consoleWidth ||
+		snake.dot[0].y <= 0 || snake.dot[0].y >= consoleHeight)
+		return -1;
+
+	for (int i = 1; i < snake.n; i++)
+		if (snake.dot[0].x == snake.dot[i].x &&
+			snake.dot[0].y == snake.dot[i].y)
+			return -1;
+
+	if (snake.dot[0].x == hq.td.x && snake.dot[0].y == hq.td.y)
+	{
+		// ăn được hoa quả
+		for (int i = snake.n; i > 0; i--)
+			snake.dot[i] = snake.dot[i - 1];
+		snake.n++;
+
+		//nếu ăn được hoa quả thì tăng thêm 1 điểm
+		snake.diem++;
+
+		//----------
+		if (snake.tt == UP)
+			snake.dot[0].y--;
+		else if (snake.tt == DOWN)
+			snake.dot[0].y++;
+		else if (snake.tt == LEFT)
+			snake.dot[0].x--;
+		else if (snake.tt == RIGHT)
+			snake.dot[0].x++;
+
+		hq.td.x = rand() % consoleWidth  ;
+		hq.td.y = rand() % consoleHeight;
+		if (ThoiGianSleep > 30)
+			ThoiGianSleep -= 30;
+	}
+	
+	return 0;
+}
+
+int main()
+{
+	srand(time(NULL));	// khởi tạo bộ sinh số ngẫu nhiên
+	Snake snake;
+	HoaQua hq;
+	KhoiTao(snake, hq);
+	int ma = 0;
+	int ThoiGianSleep = 200;
+	
+	while (true)
+	{
+		ancontro();
+		// hiển thị
+		HienThi(snake, hq);
+		//thongtin(snake);
+		// điều khiển
+		DieuKhien_DiChuyen(snake);
+		// xử lý ăn hoa quả, thua game
+		ma = XuLy(snake, hq, ThoiGianSleep);
+		// thua game, thắng game
+		if (ma == -1)	// thua game 
+		{
+			gotoXY(84, 10);
+			cout << "Ban thua roi, ahihi do ngok";
+			gotoXY(84, 11);
+			cout << "So diem cua ban vua choi la: " << snake.diem;
+			while (_getch() != 13);
+			break;
+		}
+		Sleep(ThoiGianSleep);
+	}
+	return 0;
+}
+
+
+//------------------thư viện hỗ trợ .cpp------------------
+
+
+#include <stdio.h>
+#include <conio.h>
+#include "console.h"
+
+
+int inputKey()
+{
+	if (_kbhit())
+	{
+		int key = _getch();
+
+		if (key == 224)	// special key
+		{
+			key = _getch();
+			return key + 1000;
+		}
+
+		return key;
+	}
+	else
+	{
+		return key_none;
+	}
+
+	return key_none;
+}
+
+
+//-------------------------Screen-------------------------
+void clrscr()
+{
+	CONSOLE_SCREEN_BUFFER_INFO	csbiInfo;                  
+	HANDLE	hConsoleOut;
+	COORD	Home = {0,0};
+	DWORD	dummy;
+
+	hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	GetConsoleScreenBufferInfo(hConsoleOut,&csbiInfo);
+
+	FillConsoleOutputCharacter(hConsoleOut,' ',csbiInfo.dwSize.X * csbiInfo.dwSize.Y,Home,&dummy);
+	csbiInfo.dwCursorPosition.X = 0;
+	csbiInfo.dwCursorPosition.Y = 0;
+	SetConsoleCursorPosition(hConsoleOut,csbiInfo.dwCursorPosition);
+}
+
+
+//screen: goto [x,y]
+void gotoXY (int column, int line)
+{
+	COORD coord;
+	coord.X = column;
+	coord.Y = line;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
+}
+
+
+//screen: get [x]
+int whereX()
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
+		return csbi.dwCursorPosition.X;
+	return -1;
+}
+
+
+//screen: get [y]
+int whereY()
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
+		return csbi.dwCursorPosition.Y;
+	return -1;
+}
+
+
+void TextColor (int color)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , color);
+}
+//============== làm ẩn trỏ chuột  ===========
+//cách 1:
+
+void ShowCur(bool CursorVisibility)
+{
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursor = { 1, CursorVisibility };
+	SetConsoleCursorInfo(handle, &cursor);
+}
+
+// cách 2:
+void ancontro()
+{
+	HANDLE hOut;
+	CONSOLE_CURSOR_INFO ConCurInf;
+	hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	ConCurInf.dwSize = 10;
+	ConCurInf.bVisible = FALSE;
+	SetConsoleCursorInfo(hOut, &ConCurInf);
+}
+
+// hiện con trỏ
+void hiencontro()
+{
+	HANDLE hOut;
+	CONSOLE_CURSOR_INFO ConCurInf;
+	hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	ConCurInf.dwSize = 10;
+	ConCurInf.bVisible = TRUE;
+	SetConsoleCursorInfo(hOut, &ConCurInf);
+}
+
+
+//------------------thư viện hỗ trợ .h------------------
+
+
+
+#ifndef _console_header
+#define _console_header
+
+
+#define ColorCode_Back			0
+#define ColorCode_DarkBlue		1
+#define ColorCode_DarkGreen		2
+#define ColorCode_DarkCyan		3
+#define ColorCode_DarkRed		4
+#define ColorCode_DarkPink		5
+#define ColorCode_DarkYellow	6
+#define ColorCode_DarkWhite		7
+#define ColorCode_Grey			8
+#define ColorCode_Blue			9
+#define ColorCode_Green			10
+#define ColorCode_Cyan			11
+#define ColorCode_Red			12
+#define ColorCode_Pink			13
+#define ColorCode_Yellow		14
+#define ColorCode_White			15
+
+#define default_ColorCode		7
+
+
+#define key_Up		1072
+#define key_Down	1080
+#define key_Left	1075
+#define key_Right	1077
+#define key_none	-1
+
+//--------------------------------------------------------
+
+#include <windows.h>
+
+//--------------------------------------------------------
+
+int inputKey();
+
+//-------------------------Screen-------------------------
+void clrscr();
+
+//screen: goto [x,y]
+void gotoXY (int column, int line);
+
+//screen: get [x]
+int whereX();
+
+//screen: get [y]
+int whereY();
+
+void TextColor (int color);
+//end----------------------Screen----------------------end
+// ẩn con trỏ
+void ancontro();
+// hiện con trỏ
+void hiencontro();
+void ShowCur(bool CursorVisibility);
+#endif
+
