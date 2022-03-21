@@ -3,7 +3,7 @@ Ngôn ngữ C/C++
 Tui viết có thể chưa được tốt, chưa được tối ưu, bạn có thêm chỉnh sửa chút xíu cho nó xịn xò con bò hơn nhí :3
 */
 #pragma warning(disable : 4996)
-#include <stdio.h>
+#include <cstdio>
 #include <conio.h>
 #include <string.h>
 #include <stdlib.h>
