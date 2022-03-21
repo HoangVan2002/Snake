@@ -2,7 +2,6 @@
 Ngôn ngữ C/C++ 
 Tui viết có thể chưa được tốt, chưa được tối ưu, bạn có thêm chỉnh sửa chút xíu cho nó xịn xò con bò hơn nhí :3
 */
-
 #pragma warning(disable : 4996)
 #include <stdio.h>
 #include <conio.h>
@@ -16,7 +15,7 @@ struct Diem {
 	int x, y;
 }s[1000], f, db, tg;
 FILE* h;
-int opt, opt2, opt3, opt4, i, j, huongdichuyen, diem, soluongdotcuasnake, mapchoi, p, mapdangchoido, capdo, v, d1, ptr, diemcao[5],z = 1;
+int opt, opt2, opt3, opt4, i, j, hdc, dm, sld, mc, p, mc1, cdc, v, d1, ptr, dc[5],z = 1;
 char a[10][18], t;
 int stop, ps, reset_cfg[3];
 void gotoxy(int x, int y) {
@@ -61,7 +60,7 @@ int empty_file(const char* x) {
 	return 0;
 }
 int kt() {
-	for (i = 0; i < soluongdotcuasnake; i++)
+	for (i = 0; i < sld; i++)
 		if ((f.x == s[i].x) && (f.y == s[i].y)) {
 			a[f.x][f.y] = 'O';
 			return 0;
@@ -69,7 +68,7 @@ int kt() {
 	return 1;
 }
 int kt2() {
-	for (i = 0; i < soluongdotcuasnake; i++) {
+	for (i = 0; i < sld; i++) {
 		if ((s[i].x == db.x) && (s[i].y == db.y)) {
 			a[db.x][db.y] = 'O';
 			return 0;
@@ -86,7 +85,7 @@ int kt22() {
 	return 0;
 }
 int kt2A() {
-	for (i = 0; i < soluongdotcuasnake; i++) {
+	for (i = 0; i < sld; i++) {
 		if ((s[i].x == db.x) && (s[i].y == db.y)) {
 			a[db.x][db.y] = 'O';
 			return 0;
@@ -143,43 +142,43 @@ void on_preload() {
 	opt = 1;
 	for (i = 0; i < 3; i++) { reset_cfg[i] = 0; }
 }
-void on_load() {	// mở map chơi trước đó
+void on_load() {	
 	h = fopen("cfg.ini", "r");
-	fscanf(h, "%d %d %d", &capdo, &mapchoi, &mapdangchoido);
+	fscanf(h, "%d %d %d", &cdc, &mc, &mc1);
 
 	fclose(h);
 }
 void doc_trang_thai(const char* x) {
 	h = fopen(x, "r");
-	fscanf(h, "%d %d %d", &capdo, &mapchoi, &mapdangchoido);
-	fscanf(h, "%d %d", &diem, &soluongdotcuasnake);
-	fscanf(h, "%d", &huongdichuyen);
+	fscanf(h, "%d %d %d", &cdc, &mc, &mc1);
+	fscanf(h, "%d %d", &dm, &sld);
+	fscanf(h, "%d", &hdc);
 	fscanf(h, "%d %d %d %d %d %d", &f.x, &f.y, &db.x, &db.y, &v, &d1);
-	for (i = 0; i < soluongdotcuasnake; i++) fscanf(h, "%d %d", &s[i].x, &s[i].y);	// lưu lại tọa độ của con rắn
+	for (i = 0; i < sld; i++) fscanf(h, "%d %d", &s[i].x, &s[i].y);	// lưu lại tọa độ của con rắn
 	fclose(h);
 }
 void ghi_trang_thai(const char* x) {
 	h = fopen(x, "w");
-	fprintf(h, "%d %d %d\n", capdo, mapchoi, mapdangchoido);
-	fprintf(h, "%d %d\n", diem, soluongdotcuasnake);
-	fprintf(h, "%d\n", huongdichuyen);
+	fprintf(h, "%d %d %d\n", cdc, mc, mc1);
+	fprintf(h, "%d %d\n", dm, sld);
+	fprintf(h, "%d\n", hdc);
 	fprintf(h, "%d %d %d %d %d %d\n", f.x, f.y, db.x, db.y, v, d1);
-	for (i = 0; i < soluongdotcuasnake; i++) { fprintf(h, "%d %d\n", s[i].x, s[i].y); }
+	for (i = 0; i < sld; i++) { fprintf(h, "%d %d\n", s[i].x, s[i].y); }
 	fclose(h);
 }
 void doc_diem_cao(const char* x) {
 	h = fopen(x, "r");
-	for (i = 0; i < 5; i++) fscanf(h, "%d", &diemcao[i]);
+	for (i = 0; i < 5; i++) fscanf(h, "%d", &dc[i]);
 	fclose(h);
 }
 void ghi_diem_cao(const char* x) {
 	h = fopen(x, "w");
-	for (i = 0; i < 5; i++) fprintf(h, "%d\n", diemcao[i]);
+	for (i = 0; i < 5; i++) fprintf(h, "%d\n", dc[i]);
 	fclose(h);
 }
 void on_exit() {
 	h = fopen("cfg.ini", "w");
-	fprintf(h, "%d %d %d", capdo, mapchoi, mapdangchoido);
+	fprintf(h, "%d %d %d", cdc, mc, mc1);
 	fclose(h);
 }
 void khung() {
@@ -201,9 +200,9 @@ void khung() {
 
 	}
 }
-void ve_me_cung() {	 // vẽ các map trong chế độ mê cung
-	switch (mapdangchoido) {
-	case 1:	// map trong hộp
+void ve_me_cung() {	 
+	switch (mc1) {
+	case 1:	
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 16; j++) {
 				if ((i == 0) || (i == 7) || (j == 0) || (j == 15)) {
@@ -212,7 +211,7 @@ void ve_me_cung() {	 // vẽ các map trong chế độ mê cung
 			}
 		}
 		break;
-	case 2: {	// map đường hầm
+	case 2: {	
 		for (i = 0; i < 16; i++) {
 			if (((i >= 0) && (i <= 2)) || ((i >= 13) && (i <= 15))) { a[1][i + 1] = '+'; }
 		}
@@ -233,14 +232,14 @@ void ve_me_cung() {	 // vẽ các map trong chế độ mê cung
 		}
 		break;
 	}
-	case 3: {	// map nhà máy
+	case 3: {	
 		for (i = 0; i < 5; i++) { a[i + 1][5] = '+'; }
 		for (i = 10; i < 16; i++) { a[2][i + 1] = '+'; }
 		for (i = 3; i < 8; i++) { a[i + 1][11] = '+'; }
 		for (i = 0; i < 5; i++) { a[7][i + 1] = '+'; }
 		break;
 	}
-	case 4: {	// map đường ray
+	case 4: {	
 		for (i = 0; i < 16; i++) { a[1][i + 1] = '+'; }
 		for (i = 1; i < 7; i++) {
 			if ((i == 1) || (i == 2) || (i == 5) || (i == 6)) {
@@ -255,7 +254,7 @@ void ve_me_cung() {	 // vẽ các map trong chế độ mê cung
 		}
 		break;
 	}
-	case 5: {	// map căn hộ
+	case 5: {	
 		a[1][1] = '+';
 		a[1][2] = '+';
 		a[2][1] = '+';
@@ -278,13 +277,13 @@ void ve_me_cung() {	 // vẽ các map trong chế độ mê cung
 		}
 	}
 }
-void in_mt() {	// in ra map chơi
+void in_mt() {	
 	XoaManHinh();
-	printf("\n\tDiem: %04d\n", diem);
+	printf("\n\tDiem: %04d\n", dm);
 	for (i = 0; i < 10; i++) {
 		printf("\t");
 		for (j = 0; j < 18; j++) {
-			if ((s[soluongdotcuasnake - 1].x == i) && (s[soluongdotcuasnake - 1].y == j)) textcolor(14);
+			if ((s[sld - 1].x == i) && (s[sld - 1].y == j)) textcolor(14);
 			if (f.x == i && f.y == j) {
 				textcolor(z);
 			}
@@ -303,7 +302,7 @@ void tao() {
 	} while ((kt() == 0) || (a[f.x][f.y] == '+') || (a[f.x][f.y] == '*'));
 	a[f.x][f.y] = '@';
 }
-void tao_db() {	// tọa hoa quả đặc biệt
+void tao_db() {	
 	do {
 		db.x = rand() % 8 + 1;
 		db.y = rand() % 16 + 1;
@@ -331,20 +330,20 @@ void xoa_db() {
 		a[db.x + 1][db.y] = ' ';
 		a[db.x][db.y + 1] = ' ';
 		a[db.x + 1][db.y + 1] = ' ';
-		if ((s[soluongdotcuasnake - 1].x == db.x) && (s[soluongdotcuasnake - 1].y == db.y)) a[db.x][db.y] = 'O';
-		else if ((s[soluongdotcuasnake - 1].x == db.x + 1) && (s[soluongdotcuasnake - 1].y == db.y)) a[db.x + 1][db.y] = 'o';
-		else if ((s[soluongdotcuasnake - 1].x == db.x) && (s[soluongdotcuasnake - 1].y == db.y + 1)) a[db.x][db.y + 1] = 'o';
-		else if ((s[soluongdotcuasnake - 1].x == db.x + 1) && (s[soluongdotcuasnake - 1].y == db.y + 1)) a[db.x + 1][db.y + 1] = 'o';
+		if ((s[sld - 1].x == db.x) && (s[sld - 1].y == db.y)) a[db.x][db.y] = 'O';
+		else if ((s[sld - 1].x == db.x + 1) && (s[sld - 1].y == db.y)) a[db.x + 1][db.y] = 'o';
+		else if ((s[sld - 1].x == db.x) && (s[sld - 1].y == db.y + 1)) a[db.x][db.y + 1] = 'o';
+		else if ((s[sld - 1].x == db.x + 1) && (s[sld - 1].y == db.y + 1)) a[db.x + 1][db.y + 1] = 'o';
 	}
 	else if ((v == 1) && ((a[db.x][db.y] == '*') || (a[db.x + 1][db.y] == '*') || (a[db.x][db.y + 1] == '*') || (a[db.x + 1][db.y + 1] == '*'))) {
 		a[db.x][db.y] = ' ';
 		a[db.x + 1][db.y] = ' ';
 		a[db.x][db.y + 1] = ' ';
 		a[db.x + 1][db.y + 1] = ' ';
-		if ((s[soluongdotcuasnake - 1].x == db.x) && (s[soluongdotcuasnake - 1].y == db.y)) a[db.x][db.y] = 'O';
-		else if ((s[soluongdotcuasnake - 1].x == db.x + 1) && (s[soluongdotcuasnake - 1].y == db.y)) a[db.x + 1][db.y] = 'o';
-		else if ((s[soluongdotcuasnake - 1].x == db.x) && (s[soluongdotcuasnake - 1].y == db.y + 1)) a[db.x][db.y + 1] = 'o';
-		else if ((s[soluongdotcuasnake - 1].x == db.x + 1) && (s[soluongdotcuasnake - 1].y == db.y + 1)) a[db.x + 1][db.y + 1] = 'o';
+		if ((s[sld - 1].x == db.x) && (s[sld - 1].y == db.y)) a[db.x][db.y] = 'O';
+		else if ((s[sld - 1].x == db.x + 1) && (s[sld - 1].y == db.y)) a[db.x + 1][db.y] = 'o';
+		else if ((s[sld - 1].x == db.x) && (s[sld - 1].y == db.y + 1)) a[db.x][db.y + 1] = 'o';
+		else if ((s[sld - 1].x == db.x + 1) && (s[sld - 1].y == db.y + 1)) a[db.x + 1][db.y + 1] = 'o';
 	}
 	else if ((a[db.x][db.y] == '*')) a[db.x][db.y] = ' ';
 	db.x = 0;
@@ -372,45 +371,45 @@ void Loading() {
 }
 void cap_nhat() {
 	XoaManHinh();
-	printf("\n\tDiem: %04d\n", diem);
+	printf("\n\tDiem: %04d\n", dm);
 	in_mt();
 	for (i = 0; i < 4; i++) { printf("\n"); }
 	printf("[%c] [%c] [%c] [%c]: Dieu khien \t [ESC]: Tam dung", 30, 31, 17, 16);
 }
 void luu_diem() {
-	switch (mapchoi) {
+	switch (mc) {
 	case 1:doc_diem_cao("hi0.txt"); break;
 	case 2:doc_diem_cao("hi1.txt"); break;
 	case 3:doc_diem_cao("hi2.txt"); break;
 	}
-	if (diem <= diemcao[4]) printf("\n\tDiem cua ban: %d", diem);
-	else if ((diem > diemcao[4]) && (diem <= diemcao[0])) printf("\n\tDiem cao: %d", diem);
-	else printf("\n\tDiem cao nhat: %d", diem);
-	if (diem > diemcao[4]) { diemcao[4] = diem; }
+	if (dm <= dc[4]) printf("\n\tDiem cua ban: %d", dm);
+	else if ((dm > dc[4]) && (dm <= dc[0])) printf("\n\tDiem cao: %d", dm);
+	else printf("\n\tDiem cao nhat: %d", dm);
+	if (dm > dc[4]) { dc[4] = dm; }
 	for (i = 0; i < 4; i++) {
 		for (j = i + 1; j < 5; j++) {
-			if (diemcao[i] < diemcao[j]) {
-				hoan_doi(diemcao[i], diemcao[j]);
+			if (dc[i] < dc[j]) {
+				hoan_doi(dc[i], dc[j]);
 			}
 		}
 	}
-	switch (mapchoi) {
+	switch (mc) {
 	case 1:ghi_diem_cao("hi0.txt"); break;
 	case 2:ghi_diem_cao("hi1.txt"); break;
 	case 3:ghi_diem_cao("hi2.txt"); break;
 	}
 }
 void khoi_tao() {
-	soluongdotcuasnake = 2;
-	if (mapchoi == 1) mapdangchoido = 0;
-	else if ((mapchoi == 3) && (mapdangchoido != 1)) mapdangchoido = 1;
-	if (mapdangchoido == 3) s[0].x = 3;
+	sld = 2;
+	if (mc == 1) mc1 = 0;
+	else if ((mc == 3) && (mc1 != 1)) mc1 = 1;
+	if (mc1 == 3) s[0].x = 3;
 	else s[0].x = 5;
 	s[0].y = 8;
-	if (mapdangchoido == 3) s[1].x = 3;
+	if (mc1 == 3) s[1].x = 3;
 	else s[1].x = 5;
 	s[1].y = 9;
-	huongdichuyen = 3;
+	hdc = 3;
 	a[s[0].x][s[0].y] = 'o';
 	a[s[1].x][s[1].y] = 'o';
 	stop = 0;
@@ -429,17 +428,17 @@ void tiep_theo() {
 	hoan_thanh();
 	system("cls");
 	khung();
-	soluongdotcuasnake = 2;
-	mapdangchoido++;
-	if (mapdangchoido == 3) s[0].x = 3;
+	sld = 2;
+	mc1++;
+	if (mc1 == 3) s[0].x = 3;
 	else s[0].x = 5;
 	s[0].y = 8;
-	if (mapdangchoido == 3) s[1].x = 3;
+	if (mc1 == 3) s[1].x = 3;
 	else s[1].x = 5;
 	s[1].y = 9;
-	huongdichuyen = 3;
+	hdc = 3;
 	a[s[0].x][s[0].y] = 'O';
-	a[s[soluongdotcuasnake - 1].x][s[soluongdotcuasnake - 1].y] = 'o';
+	a[s[sld - 1].x][s[sld - 1].y] = 'o';
 	stop = 0;
 	ps = 1;
 	ve_me_cung();
@@ -451,16 +450,16 @@ void tiep_theo() {
 	}
 	printf("[%c] [%c] [%c] [%c]: Dieu khien \t [ESC]: Tam dung", 30, 31, 17, 16);
 	ghi_trang_thai("save.ini");
-	Sleep(600 - 65 * capdo);
+	Sleep(600 - 65 * cdc);
 	while (ps == 1) {
 		t = getch();
 		if (t == 27) break;
 		else if (t == -32) {
 			t = getch();
-			if ((t == 72) && (huongdichuyen != 1)) huongdichuyen = 0;
-			else if ((t == 80) && (huongdichuyen != 0)) huongdichuyen = 1;
-			else if ((t == 75) && (huongdichuyen != 3)) huongdichuyen = 2;
-			else if ((t == 77) && (huongdichuyen != 2)) huongdichuyen = 3;
+			if ((t == 72) && (hdc != 1)) hdc = 0;
+			else if ((t == 80) && (hdc != 0)) hdc = 1;
+			else if ((t == 75) && (hdc != 3)) hdc = 2;
+			else if ((t == 77) && (hdc != 2)) hdc = 3;
 			ps = 0;
 		}
 		else ps = 1;
@@ -471,55 +470,55 @@ void di_chuyen(int k) {
 	if (d1 == 0) xoa_db();
 	tg = s[0];
 	a[s[0].x][s[0].y] = ' ';
-	for (i = 0; i < soluongdotcuasnake - 1; i++) {
+	for (i = 0; i < sld - 1; i++) {
 		s[i] = s[i + 1];
 		a[s[i].x][s[i].y] = 'o';
 	}
-	s[soluongdotcuasnake - 1].x = s[soluongdotcuasnake - 2].x + dx[k];
-	s[soluongdotcuasnake - 1].y = s[soluongdotcuasnake - 2].y + dy[k];
-	if (s[soluongdotcuasnake - 1].x == 0) s[soluongdotcuasnake - 1].x = 8;
-	else if (s[soluongdotcuasnake - 1].x == 9) s[soluongdotcuasnake - 1].x = 1;
-	if (s[soluongdotcuasnake - 1].y == 0) s[soluongdotcuasnake - 1].y = 16;
-	else if (s[soluongdotcuasnake - 1].y == 17) s[soluongdotcuasnake - 1].y = 1;
-	if (a[s[soluongdotcuasnake - 1].x][s[soluongdotcuasnake - 1].y] == '+') { stop = 1; }
-	a[s[soluongdotcuasnake - 1].x][s[soluongdotcuasnake - 1].y] = 'O';	// đầu con rắn
-	if ((s[soluongdotcuasnake - 1].x == f.x) && (s[soluongdotcuasnake - 1].y) == f.y) {	// nếu rắn ăn dược mồi:
+	s[sld - 1].x = s[sld - 2].x + dx[k];
+	s[sld - 1].y = s[sld - 2].y + dy[k];
+	if (s[sld - 1].x == 0) s[sld - 1].x = 8;
+	else if (s[sld - 1].x == 9) s[sld - 1].x = 1;
+	if (s[sld - 1].y == 0) s[sld - 1].y = 16;
+	else if (s[sld - 1].y == 17) s[sld - 1].y = 1;
+	if (a[s[sld - 1].x][s[sld - 1].y] == '+') { stop = 1; }
+	a[s[sld - 1].x][s[sld - 1].y] = 'O';	
+	if ((s[sld - 1].x == f.x) && (s[sld - 1].y) == f.y) {	
 		z++;
 		if (z >= 15) {
 			z = 1;
 		}
-		if ((mapchoi != 3) || ((mapchoi == 3) && (soluongdotcuasnake < 15))) diem += capdo;
-		if (diem > 9999) diem = 9999;
-		if ((((mapdangchoido == 0) || (mapdangchoido == 3)) && (soluongdotcuasnake < 100)) || ((mapdangchoido != 0) && (mapdangchoido != 3) && (soluongdotcuasnake < 126 - p))) {
-			soluongdotcuasnake++;
-			for (i = soluongdotcuasnake - 1; i >= 0; i--) { s[i + 1] = s[i]; }
+		if ((mc != 3) || ((mc == 3) && (sld < 15))) dm += cdc;
+		if (dm > 9999) dm = 9999;
+		if ((((mc1 == 0) || (mc1 == 3)) && (sld < 100)) || ((mc1 != 0) && (mc1 != 3) && (sld < 126 - p))) {
+			sld++;
+			for (i = sld - 1; i >= 0; i--) { s[i + 1] = s[i]; }
 			s[0] = tg;
-			a[s[0].x][s[0].y] = '*';	// sau khi ăn được mồi thì in ra cái này ở phía sau đuôi
-			if ((mapchoi != 3) || ((mapchoi == 3) && (soluongdotcuasnake < 15))) {
+			a[s[0].x][s[0].y] = '*';	
+			if ((mc != 3) || ((mc == 3) && (sld < 15))) {
 				tao();
 			}
-			if (soluongdotcuasnake % 5 == 2) {
+			if (sld % 5 == 2) {
 				if (d1 > 0) xoa_db();
 				if (kt22() == 1) tao_db_2x2();
 				else tao_db();
 				d1 = 14;
 			}
-			if ((mapchoi == 3) && (soluongdotcuasnake == 15)) xoa_db();
+			if ((mc == 3) && (sld == 15)) xoa_db();
 		}
 		else tao();
 	}
 	if (v == 1)
-		if (((s[soluongdotcuasnake - 1].x == db.x) && (s[soluongdotcuasnake - 1].y == db.y)) || ((s[soluongdotcuasnake - 1].x == db.x + 1) && (s[soluongdotcuasnake - 1].y == db.y)) || ((s[soluongdotcuasnake - 1].x == db.x) && (s[soluongdotcuasnake - 1].y == db.y + 1)) || ((s[soluongdotcuasnake - 1].x == db.x + 1) && (s[soluongdotcuasnake - 1].y == db.y + 1))) {
-			diem += (d1 * 5 - rand() % 5) * capdo;
+		if (((s[sld - 1].x == db.x) && (s[sld - 1].y == db.y)) || ((s[sld - 1].x == db.x + 1) && (s[sld - 1].y == db.y)) || ((s[sld - 1].x == db.x) && (s[sld - 1].y == db.y + 1)) || ((s[sld - 1].x == db.x + 1) && (s[sld - 1].y == db.y + 1))) {
+			dm += (d1 * 5 - rand() % 5) * cdc;
 			xoa_db();
 		}
-		else if ((s[soluongdotcuasnake - 1].x == db.x) && (s[soluongdotcuasnake - 1].y == db.y)) {
-			diem += (d1 * 5 - rand() % 5) * capdo;
+		else if ((s[sld - 1].x == db.x) && (s[sld - 1].y == db.y)) {
+			dm += (d1 * 5 - rand() % 5) * cdc;
 			xoa_db();
 		}
 	if ((f.x != 0) && (f.y != 0) && (a[f.x][f.y] == ' ')) { a[f.x][f.y] = '@'; }
-	for (i = 0; i < soluongdotcuasnake - 1; i++)
-		for (j = i + 1; j < soluongdotcuasnake; j++)
+	for (i = 0; i < sld - 1; i++)
+		for (j = i + 1; j < sld; j++)
 			if ((s[i].x == s[j].x) && (s[i].y == s[j].y)) {
 				stop = 1;
 				break;
@@ -529,7 +528,7 @@ void di_chuyen(int k) {
 }
 void van_moi() {
 	system("cls 2>save.ini");
-	diem = 0;
+	dm = 0;
 	khung();
 	khoi_tao();
 	ve_me_cung();
@@ -537,16 +536,16 @@ void van_moi() {
 	in_mt();
 	for (i = 0; i < 4; i++) printf("\n");
 	printf("[%c] [%c] [%c] [%c]: Dieu khien \t [ESC]: Tam dung", 30, 31, 17, 16);
-	Sleep(600 - 65 * capdo);
+	Sleep(600 - 65 * cdc);
 	while (ps == 0) {
 		if (kbhit()) {
 			t = getch();
 			if (t == -32) {
 				t = getch();
-				if ((t == 72) && (huongdichuyen != 1)) huongdichuyen = 0;
-				else if ((t == 80) && (huongdichuyen != 0)) huongdichuyen = 1;
-				else if ((t == 75) && (huongdichuyen != 3)) huongdichuyen = 2;
-				else if ((t == 77) && (huongdichuyen != 2)) huongdichuyen = 3;
+				if ((t == 72) && (hdc != 1)) hdc = 0;
+				else if ((t == 80) && (hdc != 0)) hdc = 1;
+				else if ((t == 75) && (hdc != 3)) hdc = 2;
+				else if ((t == 77) && (hdc != 2)) hdc = 3;
 			}
 			else if (t == 27) {
 				if (stop == 0) {
@@ -564,11 +563,11 @@ void van_moi() {
 		}
 		if (stop == 0) {
 			if ((kbhit() == 0) || !((t == -32) && ((t == 72) || (t == 80) || (t == 75) || (t == 77)))) {
-				di_chuyen(huongdichuyen);
-				Sleep(600 - 65 * capdo);
+				di_chuyen(hdc);
+				Sleep(600 - 65 * cdc);
 			}
-			if ((mapchoi == 3) && (soluongdotcuasnake == 15))
-				if (mapdangchoido < 5) tiep_theo();
+			if ((mc == 3) && (sld == 15))
+				if (mc1 < 5) tiep_theo();
 				else {
 					stop = 1;
 					Sleep(1000);
@@ -576,7 +575,7 @@ void van_moi() {
 		}
 		else {
 			system("cls 2>save.ini");
-			if ((mapchoi == 3) && (mapdangchoido == 5) && (soluongdotcuasnake == 15)) printf("\t---- CHIEN DICH DA HOAN THANH ----\n");
+			if ((mc == 3) && (mc1 == 5) && (sld == 15)) printf("\t---- CHIEN DICH DA HOAN THANH ----\n");
 			else printf("\t---- GAME OVER ----\n");
 			luu_diem();
 			printf("\nXin vui long doi de quay lai menu");
@@ -592,7 +591,7 @@ void tiep_tuc() {
 	doc_trang_thai("save.ini");
 	khung();
 	ve_me_cung();
-	for (i = 0; i < soluongdotcuasnake; i++) { a[s[i].x][s[i].y] = '*'; }
+	for (i = 0; i < sld; i++) { a[s[i].x][s[i].y] = '*'; }
 	if ((f.x != 0) && (f.y != 0)) a[f.x][f.y] = '@';
 	if ((db.x != 0) && (db.y != 0)) {
 		if (v == 1) {
@@ -610,16 +609,16 @@ void tiep_tuc() {
 	stop = 0;
 	ps = 1;
 	cap_nhat();
-	Sleep(600 - 65 * capdo);
+	Sleep(600 - 65 * cdc);
 	while (ps == 1) {
 		t = getch();
 		if (t == 27) break;
 		else if (t == -32) {
 			t = getch();
-			if ((t == 72) && (huongdichuyen != 1)) huongdichuyen = 0;
-			else if ((t == 80) && (huongdichuyen != 0)) huongdichuyen = 1;
-			else if ((t == 75) && (huongdichuyen != 3)) huongdichuyen = 2;
-			else if ((t == 77) && (huongdichuyen != 2)) huongdichuyen = 3;
+			if ((t == 72) && (hdc != 1)) hdc = 0;
+			else if ((t == 80) && (hdc != 0)) hdc = 1;
+			else if ((t == 75) && (hdc != 3)) hdc = 2;
+			else if ((t == 77) && (hdc != 2)) hdc = 3;
 			ps = 0;
 		}
 		else ps = 1;
@@ -629,10 +628,10 @@ void tiep_tuc() {
 			t = getch();
 			if (t == -32) {
 				t = getch();
-				if ((t == 72) && (huongdichuyen != 1)) huongdichuyen = 0;
-				else if ((t == 80) && (huongdichuyen != 0)) huongdichuyen = 1;
-				else if ((t == 75) && (huongdichuyen != 3)) huongdichuyen = 2;
-				else if ((t == 77) && (huongdichuyen != 2)) huongdichuyen = 3;
+				if ((t == 72) && (hdc != 1)) hdc = 0;
+				else if ((t == 80) && (hdc != 0)) hdc = 1;
+				else if ((t == 75) && (hdc != 3)) hdc = 2;
+				else if ((t == 77) && (hdc != 2)) hdc = 3;
 			}
 			else if (t == 27) {
 				if (stop == 0) {
@@ -649,11 +648,11 @@ void tiep_tuc() {
 		}
 		if (stop == 0) {
 			if ((kbhit() == 0) || !((t == -32) && ((t == 72) || (t == 80) || (t == 75) || (t == 77)))) {
-				di_chuyen(huongdichuyen);
-				Sleep(600 - 65 * capdo);
+				di_chuyen(hdc);
+				Sleep(600 - 65 * cdc);
 			}
-			if ((mapchoi == 3) && (soluongdotcuasnake == 15))
-				if (mapdangchoido < 5) tiep_theo();
+			if ((mc == 3) && (sld == 15))
+				if (mc1 < 5) tiep_theo();
 				else {
 					stop = 1;
 					Sleep(2000);
@@ -661,7 +660,7 @@ void tiep_tuc() {
 		}
 		else {
 			system("cls 2>save.ini");
-			if ((mapchoi == 3) && (mapdangchoido == 5) && (soluongdotcuasnake == 15)) printf("\t---- CHIEN DICH DA HOAN THANH ----\n");
+			if ((mc == 3) && (mc1 == 5) && (sld == 15)) printf("\t---- CHIEN DICH DA HOAN THANH ----\n");
 			else printf("\t---- GAME OVER ----\n");
 			luu_diem();
 			printf("\n[ ] Xin vui long doi de quay lai menu");
@@ -672,7 +671,7 @@ void tiep_tuc() {
 	}
 }
 void cap_do() {
-	ptr = capdo;
+	ptr = cdc;
 	while (true) {
 		system("cls");
 		printf("\t---- SNAKE %c CAP DO ----\n", 16);
@@ -703,17 +702,17 @@ void cap_do() {
 		else if ((t == 13) || (t == 27)) break;
 	}
 	if (t == 13) {
-		if ((capdo != ptr) && (empty_file("save.ini") == 0)) {
+		if ((cdc != ptr) && (empty_file("save.ini") == 0)) {
 			system("cls 2>save.ini");
 			opt--;
 		}
-		capdo = ptr;
+		cdc = ptr;
 		on_exit();
 	}
 }
 void me_cung() {
-	if (mapchoi == 3) opt3 = 0;
-	else opt3 = mapdangchoido;
+	if (mc == 3) opt3 = 0;
+	else opt3 = mc1;
 	while (true) {
 		system("cls");
 		printf("\t---- SNAKE %c CHE DO %c ME CUNG ----\n", 16, 16);
@@ -755,17 +754,17 @@ void me_cung() {
 		else if (opt3 > 5) opt3 = 0;
 	}
 	if (t == 13) {
-		if (((mapchoi == 1) || (mapchoi == 3) || ((mapchoi == 2) && (mapdangchoido != opt3))) && (empty_file("save.ini") == 0)) {
+		if (((mc == 1) || (mc == 3) || ((mc == 2) && (mc1 != opt3))) && (empty_file("save.ini") == 0)) {
 			system("cls 2>save.ini");
 			opt--;
 		}
-		mapchoi = 2;
-		mapdangchoido = opt3;
+		mc = 2;
+		mc1 = opt3;
 		on_exit();
 	}
 }
 void che_do() {
-	opt2 = mapchoi;
+	opt2 = mc;
 	while (true) {
 		system("cls");
 		printf("\t---- SNAKE %c CHE DO ----\n", 16);
@@ -798,14 +797,14 @@ void che_do() {
 		if (opt2 < 1) opt2 = 3;
 		else if (opt2 > 3) opt2 = 1;
 	}
-	if (opt2 == 1) mapdangchoido = 0;
-	else if (opt2 == 3) mapdangchoido = 1;
+	if (opt2 == 1) mc1 = 0;
+	else if (opt2 == 3) mc1 = 1;
 	if (t == 13) {
-		if ((mapchoi != opt2) && (empty_file("save.ini") == 0)) {
+		if ((mc != opt2) && (empty_file("save.ini") == 0)) {
 			system("cls 2>save.ini");
 			opt--;
 		}
-		mapchoi = opt2;
+		mc = opt2;
 		on_exit();
 	}
 }
@@ -821,7 +820,7 @@ void huong_dan() {
 	}
 }
 void diem_cao() {
-	switch (mapchoi) {
+	switch (mc) {
 	case 1:doc_diem_cao("hi0.txt"); break;
 	case 2:doc_diem_cao("hi1.txt"); break;
 	case 3:doc_diem_cao("hi2.txt"); break;
@@ -829,7 +828,7 @@ void diem_cao() {
 	while (true) {
 		system("cls");
 		printf("\t---- SNAKE %c DIEM CAO ----\n", 16);
-		for (i = 0; i < 5; i++) { printf("[%d]: %d\n", i + 1, diemcao[i]); }
+		for (i = 0; i < 5; i++) { printf("[%d]: %d\n", i + 1, dc[i]); }
 		for (i = 0; i < 4; i++) { printf("\n"); }
 		printf("[ESC]: Quay lai menu");
 		if (getch() == 27) break;
@@ -876,9 +875,9 @@ void dat_lai() {
 							system("cls 2>save.ini");
 							opt--;
 						}
-						capdo = 1;
-						mapchoi = 1;
-						mapdangchoido = 0;
+						cdc = 1;
+						mc = 1;
+						mc1 = 0;
 						on_exit();
 						reset_cfg[0] = 1;
 					}
@@ -897,7 +896,7 @@ void dat_lai() {
 					t = getch();
 					if (t == 27) break;
 					if (t == 13) {
-						for (i = 0; i < 5; i++) { diemcao[i] = 0; }
+						for (i = 0; i < 5; i++) { dc[i] = 0; }
 						ghi_diem_cao("hi0.txt");
 						ghi_diem_cao("hi1.txt");
 						ghi_diem_cao("hi2.txt");
@@ -923,10 +922,10 @@ void dat_lai() {
 							system("cls 2>save.ini");
 							opt--;
 						}
-						capdo = 1;
-						mapchoi = 1;
-						mapdangchoido = 0;
-						for (i = 0; i < 5; i++) { diemcao[i] = 0; }
+						cdc = 1;
+						mc = 1;
+						mc1 = 0;
+						for (i = 0; i < 5; i++) { dc[i] = 0; }
 						ghi_diem_cao("hi0.txt");
 						ghi_diem_cao("hi1.txt");
 						ghi_diem_cao("hi2.txt");
