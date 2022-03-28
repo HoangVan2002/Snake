@@ -1,5 +1,5 @@
-/* # Snake 
-Ngôn ngữ C/C++ 
+/* # Snake
+Ngôn ngữ C/C++
 Tui viết có thể chưa được tốt, chưa được tối ưu, bạn có thêm chỉnh sửa chút xíu cho nó xịn xò con bò hơn nhí :3
 */
 #pragma warning(disable : 4996)
@@ -15,7 +15,7 @@ struct Diem {
 	int x, y;
 }s[1000], f, db, tg;
 FILE* h;
-int opt, opt2, opt3, opt4, i, j, hdc, dm, sld, mc, p, mc1, cdc, v, d1, ptr, dc[5],z = 1;
+int opt, opt2, opt3, opt4, i, j, hdc, dm, sld, mc, p, mc1, cdc, v, d1, ptr, dc[5], z = 1;
 char a[10][18], t;
 int stop, ps, reset_cfg[3];
 void gotoxy(int x, int y) {
@@ -24,25 +24,12 @@ void gotoxy(int x, int y) {
 	hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(hConsoleOutput, Cursor_an_Pos);
 }
-void ancontrodi() {
-	CONSOLE_CURSOR_INFO Info;
-	Info.bVisible = FALSE;
-	Info.dwSize = 20;
-	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &Info);
-}
 void textcolor(int x) {
 	HANDLE mau;
 	mau = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(mau, x);
 }
-void XoaManHinh() {
-	HANDLE hOut;
-	COORD Position;
-	hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	Position.X = 0;
-	Position.Y = 0;
-	SetConsoleCursorPosition(hOut, Position);
-}
+
 void hoan_doi(int& a, int& b) {
 	int tg;
 	tg = a;
@@ -59,7 +46,7 @@ int empty_file(const char* x) {
 	}
 	return 0;
 }
-int kt() {
+int kt1() {
 	for (i = 0; i < sld; i++)
 		if ((f.x == s[i].x) && (f.y == s[i].y)) {
 			a[f.x][f.y] = 'O';
@@ -76,7 +63,7 @@ int kt2() {
 	}
 	return 1;
 }
-int kt22() {
+int kt3() {
 	for (i = 0; i < 7; i++) {
 		for (j = 0; j < 15; j++) {
 			if ((strncmp(&a[i + 1][j + 1], "  ", 2) == 0) && (strncmp(&a[i + 2][j + 1], "  ", 2) == 0)) return 1;
@@ -84,7 +71,7 @@ int kt22() {
 	}
 	return 0;
 }
-int kt2A() {
+int kt4() {
 	for (i = 0; i < sld; i++) {
 		if ((s[i].x == db.x) && (s[i].y == db.y)) {
 			a[db.x][db.y] = 'O';
@@ -105,10 +92,6 @@ int kt2A() {
 	}
 	if ((a[db.x][db.y] == '+') || (a[db.x + 1][db.y] == '+') || (a[db.x][db.y + 1] == '+') || (a[db.x + 1][db.y + 1] == '+')) return 0;
 	return 1;
-}
-int kt3() {
-	if (((f.x == db.x) && (f.y == db.y)) || ((f.x == db.x + 1) && (f.y == db.y)) || ((f.x == db.x) && (f.y == db.y + 1)) || ((f.x == db.x + 1) && (f.y == db.y + 1))) return 1;
-	else return 0;
 }
 void on_preload() {
 	h = fopen("cfg.ini", "r");
@@ -142,7 +125,7 @@ void on_preload() {
 	opt = 1;
 	for (i = 0; i < 3; i++) { reset_cfg[i] = 0; }
 }
-void on_load() {	
+void on_load() {
 	h = fopen("cfg.ini", "r");
 	fscanf(h, "%d %d %d", &cdc, &mc, &mc1);
 
@@ -182,7 +165,7 @@ void on_exit() {
 	fclose(h);
 }
 void khung() {
-	
+
 	for (i = 0; i < 10; i++) {
 		printf("\t");
 		for (j = 0; j < 18; j++) {
@@ -200,9 +183,9 @@ void khung() {
 
 	}
 }
-void ve_me_cung() {	 
+void ve_me_cung() {
 	switch (mc1) {
-	case 1:	
+	case 1:
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 16; j++) {
 				if ((i == 0) || (i == 7) || (j == 0) || (j == 15)) {
@@ -211,7 +194,7 @@ void ve_me_cung() {
 			}
 		}
 		break;
-	case 2: {	
+	case 2: {
 		for (i = 0; i < 16; i++) {
 			if (((i >= 0) && (i <= 2)) || ((i >= 13) && (i <= 15))) { a[1][i + 1] = '+'; }
 		}
@@ -232,14 +215,14 @@ void ve_me_cung() {
 		}
 		break;
 	}
-	case 3: {	
+	case 3: {
 		for (i = 0; i < 5; i++) { a[i + 1][5] = '+'; }
 		for (i = 10; i < 16; i++) { a[2][i + 1] = '+'; }
 		for (i = 3; i < 8; i++) { a[i + 1][11] = '+'; }
 		for (i = 0; i < 5; i++) { a[7][i + 1] = '+'; }
 		break;
 	}
-	case 4: {	
+	case 4: {
 		for (i = 0; i < 16; i++) { a[1][i + 1] = '+'; }
 		for (i = 1; i < 7; i++) {
 			if ((i == 1) || (i == 2) || (i == 5) || (i == 6)) {
@@ -254,7 +237,7 @@ void ve_me_cung() {
 		}
 		break;
 	}
-	case 5: {	
+	case 5: {
 		a[1][1] = '+';
 		a[1][2] = '+';
 		a[2][1] = '+';
@@ -269,7 +252,7 @@ void ve_me_cung() {
 		a[8][10] = '+';
 		break;
 	}
-	} 
+	}
 	p = 0;
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 16; j++) {
@@ -277,8 +260,8 @@ void ve_me_cung() {
 		}
 	}
 }
-void in_mt() {	
-	XoaManHinh();
+void in_mt() {
+	system("cls");
 	printf("\n\tDiem: %04d\n", dm);
 	for (i = 0; i < 10; i++) {
 		printf("\t");
@@ -292,17 +275,17 @@ void in_mt() {
 		}
 		printf("\n");
 	}
-	
+
 }
-void tao() {	
-	
+void tao() {
+
 	do {
 		f.x = rand() % 8 + 1;
 		f.y = rand() % 16 + 1;
-	} while ((kt() == 0) || (a[f.x][f.y] == '+') || (a[f.x][f.y] == '*'));
+	} while ((kt1() == 0) || (a[f.x][f.y] == '+') || (a[f.x][f.y] == '*'));
 	a[f.x][f.y] = '@';
 }
-void tao_db() {	
+void tao_db() {
 	do {
 		db.x = rand() % 8 + 1;
 		db.y = rand() % 16 + 1;
@@ -313,7 +296,7 @@ void tao_db_2x2() {
 	do {
 		db.x = rand() % 7 + 1;
 		db.y = rand() % 15 + 1;
-	} while ((kt2A() == 0) || (kt22() == 0));
+	} while ((kt4() == 0) || (kt3() == 0));
 	if ((f.x == db.x) && (f.y == db.y)) a[db.x][db.y] = '*';
 	else a[db.x][db.y] = '*';
 	if ((f.x == db.x + 1) && (f.y == db.y)) a[db.x + 1][db.y] = '*';
@@ -370,7 +353,7 @@ void Loading() {
 	}
 }
 void cap_nhat() {
-	XoaManHinh();
+	system("cls");
 	printf("\n\tDiem: %04d\n", dm);
 	in_mt();
 	for (i = 0; i < 4; i++) { printf("\n"); }
@@ -481,8 +464,8 @@ void di_chuyen(int k) {
 	if (s[sld - 1].y == 0) s[sld - 1].y = 16;
 	else if (s[sld - 1].y == 17) s[sld - 1].y = 1;
 	if (a[s[sld - 1].x][s[sld - 1].y] == '+') { stop = 1; }
-	a[s[sld - 1].x][s[sld - 1].y] = 'O';	
-	if ((s[sld - 1].x == f.x) && (s[sld - 1].y) == f.y) {	
+	a[s[sld - 1].x][s[sld - 1].y] = 'O';
+	if ((s[sld - 1].x == f.x) && (s[sld - 1].y) == f.y) {
 		z++;
 		if (z >= 15) {
 			z = 1;
@@ -493,13 +476,13 @@ void di_chuyen(int k) {
 			sld++;
 			for (i = sld - 1; i >= 0; i--) { s[i + 1] = s[i]; }
 			s[0] = tg;
-			a[s[0].x][s[0].y] = '*';	
+			a[s[0].x][s[0].y] = '*';
 			if ((mc != 3) || ((mc == 3) && (sld < 15))) {
 				tao();
 			}
 			if (sld % 5 == 2) {
 				if (d1 > 0) xoa_db();
-				if (kt22() == 1) tao_db_2x2();
+				if (kt3() == 1) tao_db_2x2();
 				else tao_db();
 				d1 = 14;
 			}
@@ -718,7 +701,7 @@ void me_cung() {
 		printf("\t---- SNAKE %c CHE DO %c ME CUNG ----\n", 16, 16);
 		if (opt3 == 0) {
 			textcolor(110);
-			
+
 		}
 		printf("[1] Khong co me cung%21s\u001b[0m\n", ""); // 17
 		if (opt3 == 1) {
@@ -770,7 +753,7 @@ void che_do() {
 		printf("\t---- SNAKE %c CHE DO ----\n", 16);
 		if (opt2 == 1) {
 			textcolor(110);
-			
+
 		}
 		printf("[1] Kinh dien%28s\u001b[0m\n", "");	// 10
 		if (opt2 == 2) {
@@ -841,17 +824,17 @@ void dat_lai() {
 		printf("\t---- SNAKE %c DAT LAI ----\n", 16);
 		if (opt4 == 1) {
 			textcolor(110);
-			
+
 		}
 		printf("[1] Thiet lap du lieu%60s\u001b[0m\n", "");
 		if (opt4 == 2) {
 			textcolor(110);
-			
+
 		}
 		printf("[2] Diem cao%69s\u001b[0m\n", "");
 		if (opt4 == 3) {
 			textcolor(110);
-			
+
 		}
 		printf("[3] Khoi tao tat ca%62s\u001b[0m", "");
 		for (i = 0; i < 4; i++) printf("\n");
@@ -1077,10 +1060,10 @@ void menu_tiep_tuc() {
 
 void hinhnen() {
 	printf("\n");
-	printf( "\n             /^\\/^\\                                            ");
-	printf( "\n           _|_o|  O|                                             ");
-	printf( "\n \\/     /~     \\_/ \\                                          ");
-	printf( "\n  \\____|__________/  \\                                         ");
+	printf("\n             /^\\/^\\                                            ");
+	printf("\n           _|_o|  O|                                             ");
+	printf("\n \\/     /~     \\_/ \\                                          ");
+	printf("\n  \\____|__________/  \\                                         ");
 	printf(" \n         \\_______      \\                                       ");
 	printf(" \n                 `\\     \\                  \\                  ");
 	printf(" \n                   |     |                   \\                  ");
@@ -1097,7 +1080,6 @@ void hinhnen() {
 	Loading();
 }
 int main() {
-	ancontrodi();
 	hinhnen();
 	srand(time(0));
 	on_preload();
